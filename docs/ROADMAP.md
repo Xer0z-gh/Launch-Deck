@@ -1536,17 +1536,13 @@ none of these may require rewriting Phases 1–4.
 | Rust unit + integration | **353** | `cargo test --workspace` |
 | Clippy, pedantic | **0 warnings** | `--all-targets` |
 | tsc + ESLint | clean | `--max-warnings 0` |
-| Sort behaviour | **15** | shipped release build, real mouse input |
-| UI / theme / native | **27** | shipped release build |
-| Grid, storage, manual, web apps | **27** | `shell-verify`, shipped build |
-| Reviewed defects, kept fixed | **21** | `regress-verify`, shipped build |
-| Launch readiness, flags, ordering | **28** | `launcher-verify`, real 56-project registry |
-| Layout geometry | **34** | 4 widths × panel open/closed |
-| Web interface guidelines | **16** | computed styles, shipped build |
-| System view | **18** | shipped release build, live counters |
-| Stats vs Windows counters | **27** | `tools/verify/stats-accuracy.ps1` |
-| Survives window close | **7** | `tools/verify/survives-close.ps1` |
-| Boot benchmark | 5 runs | `tools/verify/boot-bench.ps1` |
+| Browser suites | **14** | shipped release build over CDP, `tools/verify/run-all.ps1` |
+| Survives window close | — | `tools/verify/survives-close.ps1` |
+
+The rows for `stats-accuracy.ps1`, `boot-bench.ps1`, `metrics-verify.mjs` and
+the System view are gone: those harnesses left the tree with the screen they
+tested. Per-suite assertion counts were last taken before that removal — re-run
+`run-all.ps1` and restate them, or leave them out.
 
 Browser suites drive the **release** binary over CDP, never a dev server — a
 smoke test asserts `location.origin === "http://tauri.localhost"`.

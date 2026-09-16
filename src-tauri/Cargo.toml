@@ -1,0 +1,36 @@
+[package]
+name = "launch-deck"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+authors.workspace = true
+license.workspace = true
+description = "Local-first control centre for every project you build"
+
+[lib]
+name = "launch_deck_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2.6.3", features = [] }
+
+[dependencies]
+base64 = "0.23.0"
+chrono = "0.4.45"
+deck-domain = { version = "0.1.0", path = "../crates/deck-domain" }
+deck-runners = { version = "0.1.0", path = "../crates/deck-runners" }
+deck-runtime = { version = "0.1.0", path = "../crates/deck-runtime" }
+deck-store = { version = "0.1.0", path = "../crates/deck-store" }
+parking_lot = "0.12.5"
+serde = { version = "1.0.229", features = ["derive"] }
+serde_json = "1.0.151"
+tauri = { version = "2.11.5", features = ["tray-icon"] }
+tauri-plugin-dialog = "2.7.2"
+tauri-plugin-single-instance = "2.4.3"
+thiserror = "2.0.19"
+tokio = "1.53.1"
+tracing = "0.1.44"
+# Named-event second-launch detection; see src/fastpath.rs.
+windows = { version = "0.62.2", features = ["Win32_Foundation", "Win32_System_Threading"] }
+tracing-subscriber = { version = "0.3.23", features = ["env-filter"] }
+uuid = "1.24.0"

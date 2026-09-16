@@ -1,0 +1,28 @@
+# A saved web app: a deployed site, a hosted panel, a dashboard you live in.
+#
+# Created by "Add web app", which writes a real Windows `.url` shortcut into a
+# folder under the app data directory and registers that folder. The shortcut
+# is not ceremony -- it means the entry is a genuine artefact you can also
+# double-click from Explorer, rather than a row that exists only inside a
+# database.
+#
+# Highest priority of any manifest: the folder contains exactly one file and
+# nothing else could plausibly claim it, but a web app must never be mistaken
+# for something else on a re-detect.
+[meta]
+id = "web"
+name = "Web app"
+language = "Web"
+icon = "globe"
+priority = 1000
+
+[[detect]]
+file_exists = "link.url"
+
+# The fallback path only. Launch Deck opens web apps in an embedded window of
+# its own -- that is the point of saving one here -- and the UI routes Run
+# there without spawning anything. This command is what "run it anyway" means
+# for any path that bypasses the UI: hand the shortcut to the shell, which
+# opens it in the default browser.
+[commands.run]
+exec = { program = "cmd", args = ["/c", "start", "", '{projectRoot}\link.url'] }

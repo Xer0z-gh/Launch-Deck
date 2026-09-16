@@ -1,0 +1,114 @@
+# A Tauri app that has already been built: launch the binary, don't recompile.
+#
+# WHY THIS EXISTS
+#
+# The generic `tauri` runner runs `npm run tauri dev`, which does a full cargo
+# debug build before showing anything. On a real project that is over a minute
+# -- Chess Scout was measured at exactly that -- while a finished
+# `chess-scout.exe` sat in `target/release` the whole time.
+#
+# Pressing Run in a launcher means "start this app". It does not mean "rebuild
+# this app from source and then start it". So when a built binary exists, that
+# is what runs; when it does not, the lower-priority `tauri` manifest still
+# provides the dev-server path.
+#
+# THE TRADE, STATED PLAINLY
+#
+# The binary can be older than the source. That is the deal being made: a
+# launcher launches what is built. `Build` remains a separate lifecycle step,
+# and the log line names the exact binary that was started so a stale run is
+# visible rather than mysterious.
+
+[meta]
+id = "tauri-built"
+name = "Tauri (built)"
+language = "Rust"
+framework = "Tauri"
+icon = "app-window"
+# Above `tauri` (400) so a built project takes this path, and above every
+# framework runner so a Tauri app is never claimed as generic Node.
+priority = 450
+
+[[detect]]
+any_of = [
+  { file_exists = "src-tauri/tauri.conf.json" },
+  { file_exists = "src-tauri/Cargo.toml" },
+]
+
+# Only claim the project when there is actually something to launch. Without
+# this the runner would win detection and then have no binary to run, which is
+# worse than never matching: `tauri` would never get its turn.
+#
+# KNOWN LIMITATION, and the alternative was worse. In a multi-crate workspace
+# `target/release/` holds every member's binary and the glob below cannot tell
+# which one is the Tauri app: Pulse has a `pulse` CLI beside a `pulse-app`
+# desktop binary, and this runner picks the CLI, runs it, watches it print its
+# usage text and exit 0, and calls that a successful launch.
+#
+# Guarding the workspace case on `crates/` not existing was tried and REVERTED:
+# it also disqualified Launch Deck itself, which is a workspace whose app
+# genuinely does build to `target/release/launch-deck.exe`, sending it back to
+# `npm run tauri dev` -- the slow path this whole manifest exists to avoid.
+#
+# The real fix is to match the binary against the `[package] name` in
+# `src-tauri/Cargo.toml`, which `[[vars]]` can already read via `from_value`.
+# Detection rules cannot interpolate a variable into a glob, so that needs a
+# manifest-format change rather than a manifest change.
+[[detect]]
+any_of = [
+  { glob_matches = "src-tauri/target/release/*.exe" },
+  { glob_matches = "target/release/*.exe" },
+]
+
+[version]
+json = { file = "package.json", pointer = "version" }
+
+# The binary's location depends on layout: a standalone app builds to
+# `src-tauri/target/`, one inside a Cargo workspace to `target/` at the
+# workspace root. Ordered, first match wins.
+# The app's own name, so the glob below can ask for the right binary rather
+# than any binary. Falls back to `*`, which is the behaviour this had before
+# and is correct whenever there is only one executable to choose from.
+[[vars]]
+name = "appname"
+from_value = { toml = { file = "src-tauri/Cargo.toml", path = "package.name" } }
+default = "*"
+
+[[vars]]
+name = "app"
+first_match_any = [
+  "src-tauri/target/release/{appname}.exe",
+  "target/release/{appname}.exe",
+  # Last resort, and only for the standalone layout: `src-tauri/target/` holds
+  # the app and nothing else, so any executable there is the right one.
+  #
+  # There is deliberately NO equivalent for the workspace root. That directory
+  # holds every member's binary, and guessing is how Pulse ended up launching
+  # its `pulse` CLI, watching it print usage, and reporting success. With no
+  # guess available, `app` stays empty and the launch fails loudly instead --
+  # which is the honest outcome when the app has not been built.
+  "src-tauri/target/release/*.exe",
+]
+default = ""
+
+[commands.run]
+exec = { program = "{projectRoot}/{app}", args = [] }
+
+[commands.build]
+exec = { program = "{pm}", args = ["run", "tauri", "build"] }
+
+[[vars]]
+name = "pm"
+default = "npm"
+cases = [
+  { value = "pnpm", when = { file_exists = "pnpm-lock.yaml" } },
+  { value = "yarn", when = { file_exists = "yarn.lock" } },
+  { value = "bun",  when = { file_exists = "bun.lockb" } },
+]
+
+[commands.install]
+exec = { program = "{pm}", args = ["install"] }
+
+# A built desktop app binds no port and prints no ready line -- it opens a
+# window. Declaring nothing leaves readiness Unknown, which renders as plain
+# Running rather than a permanent "Starting".

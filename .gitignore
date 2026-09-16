@@ -1,0 +1,35 @@
+# Rust
+/target
+/src-tauri/target
+
+# Node
+/node_modules
+/dist
+
+# Secrets never enter the repo
+.env
+.env.*
+!.env.example
+
+# Local editor state
+.vscode/*
+!.vscode/extensions.json
+.idea
+
+# The workspace .gitignore has a `logs/` rule meant for log OUTPUT directories.
+# It also matches `src/features/logs/` -- the log viewer's SOURCE -- which had
+# two silent consequences: the directory was never committed, and Tailwind v4's
+# automatic source detection (which skips gitignored paths) never scanned it, so
+# any class used only by the log panel produced no CSS at all. That is how the
+# panel lost its `max-w` and grew unbounded.
+!src/features/logs/
+
+# `nul` is a reserved DEVICE name on Windows, so a `> nul` redirect run under
+# Git Bash (where it is not a device) silently creates a real file instead.
+# Never source; always an accident.
+/nul
+
+# Screenshot written by `tools/verify/system-verify.mjs` on every run. A capture
+# of live CPU/GPU readings -- it differs on every run by definition, so it is a
+# test artifact, not a document.
+/system-view.png

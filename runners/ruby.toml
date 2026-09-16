@@ -1,0 +1,31 @@
+[meta]
+id = "ruby"
+name = "Ruby"
+language = "Ruby"
+icon = "gem"
+priority = 100
+default_ports = [3000, 4567]
+
+[[detect]]
+any_of = [
+  { file_exists = "Gemfile" },
+  { file_exists = "config.ru" },
+  { glob_matches = "*.gemspec" },
+]
+
+[[vars]]
+name = "entry"
+default = "main.rb"
+cases = [
+  { value = "config.ru", when = { file_exists = "config.ru" } },
+]
+first_match = "*.rb"
+
+[commands.run]
+exec = { program = "ruby", args = ["{entry}"] }
+
+[commands.install]
+exec = { program = "bundle", args = ["install"] }
+
+[commands.test]
+exec = { program = "bundle", args = ["exec", "rake", "test"] }

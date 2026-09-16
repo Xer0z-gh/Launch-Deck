@@ -1,0 +1,62 @@
+# Generic Python. Poetry, uv and PDM refine this at higher priorities.
+[meta]
+id = "python"
+name = "Python"
+language = "Python"
+icon = "file-code-2"
+priority = 100
+default_ports = [5000, 8000]
+
+[[detect]]
+any_of = [
+  { file_exists = "requirements.txt" },
+  { file_exists = "pyproject.toml" },
+  { file_exists = "setup.py" },
+  { file_exists = "Pipfile" },
+  { file_exists = "main.py" },
+  { file_exists = "app.py" },
+  { file_exists = "manage.py" },
+]
+
+# Prefer a conventional entry point, falling back to whatever single .py file
+# sits in the root.
+[[vars]]
+name = "entry"
+default = "main.py"
+cases = [
+  { value = "manage.py", when = { file_exists = "manage.py" } },
+  { value = "main.py",   when = { file_exists = "main.py" } },
+  { value = "app.py",    when = { file_exists = "app.py" } },
+  { value = "src/main.py", when = { file_exists = "src/main.py" } },
+]
+first_match = "*.py"
+
+[commands.run]
+exec = { program = "python", args = ["{entry}"] }
+
+[commands.install]
+exec = { program = "python", args = ["-m", "pip", "install", "-r", "requirements.txt"] }
+
+[commands.test]
+exec = { program = "python", args = ["-m", "pytest"] }
+
+# Setup detection. Read-only, like every detection rule.
+#
+# Several accepted markers because the convention genuinely varies -- picking
+# only ".venv" would report working projects as broken.
+[[setup]]
+when_file_exists = "requirements.txt"
+requires_any = [".venv", "venv", "env", ".conda"]
+hint = "No virtual environment for requirements.txt"
+
+# A packaged project has no entry file to run -- it has to be installed first.
+#
+# Video-Forge is the case: `pyproject.toml`, a `videoforge/` package, no `.py`
+# in the root and no `__main__.py`. Nothing matched, so `entry` fell back to its
+# default and Launch Deck offered a Run button that executed `python main.py` on
+# a file that does not exist. "can't open file 'main.py'" is a worse answer than
+# "this needs installing", which is the true one.
+[[setup]]
+when_file_exists = "pyproject.toml"
+requires_any = [".venv", "venv", "env", ".conda", "*.egg-info", "*.egg-link"]
+hint = "Packaged project -- install it before running (pip install -e .)"

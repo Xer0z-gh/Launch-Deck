@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
+  <!--
+    Launch Deck app mark: a chevron lifting off a pad.
+
+    This is the master. Every PNG and the .ico are generated from this geometry,
+    so edits happen here and nowhere else.
+
+    Design notes worth keeping:
+
+    * NO background tile. An earlier version put the mark on a filled blue
+      rounded square, matching the Chess Scout family. On a dark taskbar sitting
+      beside a dozen other coloured tiles that reads as more noise, not more
+      identity, so the tile is gone and the mark stands alone.
+
+    * NOT a triangle above a bar. That silhouette is the universal EJECT glyph
+      and gets read as "eject" before anything else. The chevron is unambiguous
+      and shares its outline with nothing else in a taskbar.
+
+    * Coordinates sit on the 32-unit grid deliberately. Every horizontal and
+      vertical edge lands on a whole unit, so at 16px and 32px — the sizes
+      Windows actually uses — the flat edges fall on pixel boundaries instead
+      of smearing across two. Only the diagonals antialias, which is correct.
+
+    * Solid white. On the dark Windows taskbar this reads cleanly at 16px and
+      needs no colour to be recognisable. Swap `fill` for the accent (#5aa2ff)
+      if it ever has to sit on a light background.
+  -->
+  <path
+    d="M16 4 L29 17 L24.5 21.5 L16 13 L7.5 21.5 L3 17 Z"
+    fill="#ffffff"
+  />
+  <rect x="9" y="24" width="14" height="4" rx="2" fill="#ffffff" />
+</svg>

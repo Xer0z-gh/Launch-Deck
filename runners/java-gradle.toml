@@ -1,0 +1,33 @@
+[meta]
+id = "java-gradle"
+name = "Java (Gradle)"
+language = "Java"
+framework = "Gradle"
+icon = "coffee"
+priority = 100
+default_ports = [8080]
+
+[[detect]]
+any_of = [
+  { file_exists = "build.gradle" },
+  { file_exists = "build.gradle.kts" },
+]
+
+[[vars]]
+name = "gradle"
+default = "gradle"
+cases = [
+  { value = "gradlew.bat", when = { file_exists = "gradlew.bat" } },
+]
+
+[commands.run]
+exec = { program = "{gradle}", args = ["run"] }
+
+[commands.build]
+exec = { program = "{gradle}", args = ["build"] }
+
+[commands.test]
+exec = { program = "{gradle}", args = ["test"] }
+
+[commands.clean]
+exec = { program = "{gradle}", args = ["clean"] }

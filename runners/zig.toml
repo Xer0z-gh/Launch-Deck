@@ -1,0 +1,21 @@
+[meta]
+id = "zig"
+name = "Zig"
+language = "Zig"
+icon = "cog"
+priority = 100
+
+[[detect]]
+any_of = [
+  { file_exists = "build.zig" },
+  { file_exists = "build.zig.zon" },
+]
+
+[commands.run]
+exec = { program = "zig", args = ["build", "run"] }
+
+[commands.build]
+exec = { program = "zig", args = ["build", "-Doptimize=ReleaseFast"] }
+
+[commands.test]
+exec = { program = "zig", args = ["build", "test"] }

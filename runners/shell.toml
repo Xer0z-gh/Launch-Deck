@@ -1,0 +1,22 @@
+[meta]
+id = "shell"
+name = "Shell script"
+language = "Shell"
+icon = "terminal"
+priority = 60
+
+[[detect]]
+glob_matches = "*.sh"
+
+[[vars]]
+name = "entry"
+default = "main.sh"
+cases = [
+  { value = "main.sh",  when = { file_exists = "main.sh" } },
+  { value = "start.sh", when = { file_exists = "start.sh" } },
+  { value = "run.sh",   when = { file_exists = "run.sh" } },
+]
+first_match = "*.sh"
+
+[commands.run]
+exec = { program = "bash", args = ["{entry}"] }

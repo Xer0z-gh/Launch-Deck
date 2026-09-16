@@ -1,0 +1,26 @@
+[meta]
+id = "make"
+name = "Make"
+language = "C"
+framework = "Make"
+icon = "binary"
+priority = 90
+
+[[detect]]
+any_of = [
+  { file_exists = "Makefile" },
+  { file_exists = "makefile" },
+  { file_exists = "GNUmakefile" },
+]
+
+[commands.run]
+exec = { program = "make", args = ["run"] }
+
+[commands.build]
+exec = { program = "make", args = [] }
+
+[commands.test]
+exec = { program = "make", args = ["test"] }
+
+[commands.clean]
+exec = { program = "make", args = ["clean"] }

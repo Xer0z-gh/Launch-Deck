@@ -1,0 +1,562 @@
+@import "tailwindcss";
+
+/*
+ * Scan the whole frontend explicitly.
+ *
+ * Tailwind v4 auto-detects sources but SKIPS anything git ignores. The
+ * workspace-level .gitignore has a `logs/` rule for log output directories,
+ * which also matched `src/features/logs/` -- so the log panel's classes were
+ * silently never generated, and the panel lost its max-width and grew without
+ * bound. Naming the sources here makes utility generation independent of
+ * whatever ignore rules exist above this project.
+ */
+@source "../**/*.{ts,tsx}";
+
+/*
+ * Launch Deck design tokens.
+ *
+ * Single source of truth. Nothing in the app may use a raw colour, radius,
+ * spacing value or duration that is not defined here.
+ *
+ * Palette rationale (validated on long-session tools): the field is a deep
+ * neutral charcoal rather than near-black, and the ink is a soft white rather
+ * than pure white. Near-black under pure white measures ~17:1 -- past the point
+ * where more contrast helps, and the main cause of eye strain over an hour at a
+ * dashboard. This pairing sits around 13:1: still well clear of AAA, materially
+ * calmer. Lower the contrast of the field, never the chroma of the accent.
+ *
+ * The accent means one thing: live. Running processes, selected rows, focused
+ * controls. It is never decoration. If everything is accented, nothing is live.
+ */
+
+@theme {
+  /* ====================================================================
+   * iOS / iPadOS system values.
+   *
+   * Tanner, 2026-08-31: "really nail that apple styling fully switch the ui
+   * to this" + the iOS/iPadOS 27 design kit. So this is no longer a charcoal
+   * instrument panel wearing Apple's corner radii -- the whole token layer is
+   * Apple's published system palette, type ramp, radii and materials, and the
+   * app is built from those.
+   *
+   * The names are unchanged on purpose (`field`, `panel`, `ink`, `rule`, ...)
+   * because 262 call sites already speak them; re-pointing the VALUES
+   * converts every one of those at once, and leaves the diff readable.
+   * The mapping, so nobody has to guess later:
+   *
+   *   field   = systemGroupedBackground        (the page)
+   *   panel   = secondarySystemGroupedBackground (a grouped card)
+   *   raised  = tertiarySystemGroupedBackground  (a row highlight)
+   *   overlay = the popover/menu material
+   *   ink     = label, and its opacities are Apple's secondary/tertiary/
+   *             quaternary label steps rather than arbitrary fractions
+   *   rule    = separator (opaque and non-opaque both exist on iOS; this is
+   *             the non-opaque one, which is what lists actually use)
+   * ==================================================================== */
+
+  /* ---- Surfaces: dark (the default) ------------------------------------ */
+  /*
+   * iOS dark mode grouped backgrounds. True black for the page is Apple's
+   * value, not a stylistic choice -- on OLED it is the ground everything
+   * else is measured against, and the elevated greys only read correctly
+   * against it.
+   */
+  --color-field: #131315;
+  --color-panel: #1c1c1e;
+  --color-raised: #2c2c2e;
+  --color-overlay: #3a3a3c;
+
+  /* ---- Label ----------------------------------------------------------- */
+  /*
+   * Apple's label colour is pure white in dark mode, and the secondary /
+   * tertiary / quaternary steps are opacities of a slightly blue-tinted
+   * white (235,235,245). The app expresses greys as `ink/NN`, so the ink IS
+   * that tinted white and the documented steps land at ink/60, ink/30 and
+   * ink/18 -- the same numbers Apple publishes.
+   */
+  --color-ink: #ebebf5;
+  --color-ink-strong: #f2f2f5;
+
+  /* ---- Materials ------------------------------------------------------- */
+  /*
+   * iOS separates surfaces with fills and hairlines, never with a light
+   * catch along the top edge -- that was this app's own signature and it
+   * reads as "not Apple" immediately. Kept as a no-op so the 20-odd call
+   * sites do not all have to change, and so it can be revived if the
+   * instrument look ever comes back.
+   */
+  --hairline-top: 0 0 #0000;
+  --hairline-top-strong: 0 0 #0000;
+
+  /* Grouped cards on iOS are flat: the grouped background separates them,
+     not elevation. Only genuinely floating things (menus, sheets) get a
+     shadow, and it is soft and wide. */
+  --shadow-card: 0 0 #0000;
+  --shadow-float: 0 8px 30px rgb(0 0 0 / 0.35), 0 2px 8px rgb(0 0 0 / 0.25);
+
+  /* ---- System colours -------------------------------------------------- */
+  /* systemBlue / systemRed / systemOrange / systemGreen, dark variants. */
+  --color-accent: #4b8fd6;
+  --color-accent-hover: #62a1e2;
+  --color-accent-dim: #3a72ad;
+  /* Filled controls put white on the tint -- never a dark ink. */
+  --color-on-accent: #ffffff;
+  --color-signal: #e0736a;
+  --color-warn: #d6a256;
+  --color-good: #5fb87d;
+
+  /* ---- Separators and fills -------------------------------------------- */
+  /* Apple's non-opaque separator, and the four system fill levels used for
+     control backgrounds, search fields and pressed states. */
+  --color-rule: rgb(84 84 88 / 0.6);
+  --color-edge-strong: rgb(84 84 88 / 0.9);
+  --color-fill: rgb(120 120 128 / 0.36);
+  --color-fill-2: rgb(120 120 128 / 0.32);
+  --color-fill-3: rgb(118 118 128 / 0.24);
+  --color-fill-4: rgb(116 116 128 / 0.18);
+
+  /* ---- Radii ----------------------------------------------------------- */
+  /*
+   * iOS 26/27 corners are large and concentric: a control inside a card uses
+   * a smaller radius than the card, so the curves stay parallel. These are
+   * the sizes the design kit uses for controls, grouped cards, sheets and
+   * the capsule everything from buttons to search fields now takes.
+   */
+  --radius-control: 10px;
+  --radius-panel: 14px;
+  --radius-card: 18px;
+  --radius-modal: 26px;
+  --radius-capsule: 999px;
+
+  /* ---- Typography ------------------------------------------------------ */
+  /*
+   * SF Pro's METRICS, with the faces that actually exist on this machine.
+   *
+   * Tanner's standing rule (2026-08-25) is installed system faces only, and
+   * SF Pro is not installed on Windows -- pulling it down would be the exact
+   * thing he rejected. `-apple-system` picks SF up if this ever runs on a
+   * Mac; on Windows it resolves to Segoe UI Variable, which is the system
+   * face and carries the same optical-size axis. The RAMP below is Apple's,
+   * and the ramp is most of what the eye reads as "iOS".
+   */
+  --font-sans: -apple-system, "SF Pro Text", "SF Pro Display",
+    "Segoe UI Variable Text", "Segoe UI", system-ui, sans-serif;
+  --font-mono: "SF Mono", "Cascadia Mono", "JetBrains Mono", "Consolas",
+    ui-monospace, monospace;
+
+  /* The iOS type ramp, in px, with its tracking. Titles are tight, small
+     text is loose -- copying the sizes but not the tracking is the most
+     common way an "iOS-styled" UI still reads wrong. */
+  --text-large-title: 34px;
+  --text-title-1: 28px;
+  --text-title-2: 22px;
+  --text-title-3: 20px;
+  --text-headline: 17px;
+  --text-body: 17px;
+  --text-callout: 16px;
+  --text-subhead: 15px;
+  --text-footnote: 13px;
+  --text-caption-1: 12px;
+  --text-caption-2: 11px;
+
+  --tracking-large-title: 0.374px;
+  --tracking-title-2: 0.35px;
+  --tracking-headline: -0.408px;
+  --tracking-subhead: -0.24px;
+  --tracking-footnote: -0.078px;
+
+  /* ---- Motion ---------------------------------------------------------- */
+  /*
+   * iOS motion is spring-based rather than eased. These curves approximate
+   * the standard and the snappier interactive spring; nothing exceeds the
+   * 240ms ceiling this project already held itself to.
+   */
+  --ease-out-quad: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  --ease-standard: cubic-bezier(0.32, 0.72, 0, 1);
+  --ease-spring: cubic-bezier(0.34, 1.4, 0.64, 1);
+  --duration-instant: 80ms;
+  --duration-fast: 140ms;
+  --duration-base: 200ms;
+  --duration-slow: 240ms;
+}
+
+/*
+ * Light theme. Same structural roles, inverted material. The accent holds its
+ * hue so "live" reads identically in both themes; it darkens slightly to keep
+ * 4.5:1 against the lighter field.
+ */
+:root[data-theme="light"] {
+  /* Higher specificity than the `html` rule below, so the light theme wins. */
+  color-scheme: light;
+
+  /*
+   * iOS light mode. The grouped background is the light grey page and cards
+   * are white on top of it -- the exact inverse of dark, where the page is
+   * black and cards are grey. Getting this pair backwards is what makes a
+   * light theme feel like a dimmed dark theme.
+   */
+  --color-field: #f2f2f7;
+  --color-panel: #ffffff;
+  --color-raised: #f2f2f7;
+  --color-overlay: #ffffff;
+
+  /* Label is pure black; its steps are opacities of a blue-tinted near-black
+     (60,60,67), again Apple's published values. */
+  --color-ink: #3c3c43;
+  --color-ink-strong: #000000;
+
+  --hairline-top: 0 0 #0000;
+  --hairline-top-strong: 0 0 #0000;
+  --shadow-card: 0 0 #0000;
+  --shadow-float: 0 8px 30px rgb(0 0 0 / 0.12), 0 2px 8px rgb(0 0 0 / 0.08);
+
+  /* Light-mode system colours: the same hues, darkened for a white ground. */
+  --color-accent: #2f6fb5;
+  --color-accent-hover: #3f81c9;
+  --color-accent-dim: #245789;
+  --color-on-accent: #ffffff;
+  --color-signal: #c1544a;
+  --color-warn: #b07d33;
+  --color-good: #46915f;
+
+  --color-rule: rgb(60 60 67 / 0.29);
+  --color-edge-strong: rgb(60 60 67 / 0.5);
+  --color-fill: rgb(120 120 128 / 0.2);
+  --color-fill-2: rgb(120 120 128 / 0.16);
+  --color-fill-3: rgb(118 118 128 / 0.12);
+  --color-fill-4: rgb(116 116 128 / 0.08);
+}
+
+@layer base {
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
+  html,
+  body,
+  #root {
+    height: 100%;
+  }
+
+  /*
+   * Native scrollbars, text carets, spinners and context menus follow the
+   * app's own theme, not the OS's. Without this, a user on a light Windows
+   * install running the dark theme gets pale scrollbars welded to a charcoal
+   * panel -- the single most obvious tell that a UI is a web page in a window.
+   *
+   * It lives here rather than in <meta name="color-scheme"> because the meta
+   * tag cannot follow `data-theme` once the user overrides it. The meta tag is
+   * still there to get first paint right before this stylesheet arrives.
+   */
+  html {
+    color-scheme: dark;
+  }
+
+  body {
+    margin: 0;
+    background-color: var(--color-field);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    font-size: 13px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    /* A desktop chrome, not a web page: no rubber-banding, no text selection
+       except where content is meant to be copied. */
+    overscroll-behavior: none;
+    user-select: none;
+  }
+
+  /* A heading must not drop a single orphaned word onto its own line, and body
+     copy must not end in one either. Free typographic polish. */
+  h1,
+  h2,
+  h3,
+  h4 {
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  /* Touch laptops are common on Windows; skip the 300ms double-tap-zoom wait on
+     anything that is meant to be pressed. */
+  button,
+  [role="button"],
+  a,
+  label,
+  summary {
+    touch-action: manipulation;
+  }
+
+  /*
+   * Rows arrive in a short cascade rather than all at once.
+   *
+   * Done in CSS, not with a motion component per row: Vantage proved that
+   * mounting a motion component on every row of a long list is the expensive
+   * part, and this needs no interruption, no gesture and no exit -- just an
+   * entrance. `backwards` fill keeps a row invisible during its delay instead
+   * of flashing at full opacity first.
+   *
+   * The delay is capped so row 40 is not still waiting half a second in; past
+   * ~15 rows the cascade has already communicated "a list is arriving".
+   *
+   * The position comes from `:nth-child`, NOT from an inline `--row-i` custom
+   * property, and that is a performance decision rather than a stylistic one.
+   *
+   * Chromium shares one computed style between elements that match the same
+   * rules -- and an element carrying an inline custom property is unique by
+   * definition, so it cannot participate. Thirty rows with `--row-i: 0..29`
+   * therefore meant thirty full style computations, each dragging its ~45
+   * descendants along, and the sharing cache went unused for the largest
+   * repeated structure on the screen.
+   *
+   * Measured by `tools/verify/style-cost.mjs`, which times both conditions
+   * interleaved in one document after every animation has settled: **32.5 ms
+   * with the inline property, 17.1 ms without. 15.4 ms, 47% of the recalc,
+   * bought by one number per row**, with no overlap between the two sample
+   * sets. Style recalc was 167 ms of boot against 11 ms of layout, so this was
+   * the dominant cost of showing a list.
+   *
+   * The first two attempts to measure this compared conditions across separate
+   * page reloads and produced a confident number from a build that no longer
+   * had the property at all -- the row entrance animation was still running
+   * during some probes, and a running animation forces a recalc every frame.
+   * Hence the harness shape; see its header.
+   *
+   * Sixteen static rules replace it exactly: the delay was already capped at
+   * fifteen, so row 16 onward shares the default and needs no rule at all.
+   */
+  @keyframes row-in {
+    from {
+      opacity: 0;
+      transform: translateY(4px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  .row-in {
+    animation: row-in var(--duration-slow) var(--ease-standard) backwards;
+    /* Row 16 and beyond: the capped delay, as the default. */
+    animation-delay: 210ms;
+  }
+
+  .row-in:nth-child(1) { animation-delay: 0ms; }
+  .row-in:nth-child(2) { animation-delay: 14ms; }
+  .row-in:nth-child(3) { animation-delay: 28ms; }
+  .row-in:nth-child(4) { animation-delay: 42ms; }
+  .row-in:nth-child(5) { animation-delay: 56ms; }
+  .row-in:nth-child(6) { animation-delay: 70ms; }
+  .row-in:nth-child(7) { animation-delay: 84ms; }
+  .row-in:nth-child(8) { animation-delay: 98ms; }
+  .row-in:nth-child(9) { animation-delay: 112ms; }
+  .row-in:nth-child(10) { animation-delay: 126ms; }
+  .row-in:nth-child(11) { animation-delay: 140ms; }
+  .row-in:nth-child(12) { animation-delay: 154ms; }
+  .row-in:nth-child(13) { animation-delay: 168ms; }
+  .row-in:nth-child(14) { animation-delay: 182ms; }
+  .row-in:nth-child(15) { animation-delay: 196ms; }
+
+  /* ---------------------------------------------------------------------
+   * Enter/exit transitions
+   *
+   * These replace motion/react, which cost 77KB of a 499KB bundle -- 15.5%,
+   * measured by attributing generated bytes through the sourcemap -- to
+   * animate three things: the log panel, the detail bar and toasts. All three
+   * animate opacity, size and transform, which the browser does natively and
+   * off the main thread.
+   *
+   * `@starting-style` supplies the from-state for a node that is new to the
+   * DOM, so an entrance needs no extra render and no requestAnimationFrame
+   * dance. The exit is the `.is-open` class coming off; `usePresence` in
+   * `lib/presence.ts` keeps the node mounted for exactly the duration below
+   * while that runs. Same tokens as the old `PANEL_TRANSITION` and
+   * `POP_TRANSITION`, so the timing is unchanged, not merely similar.
+   *
+   * Reduced motion is handled by the global block at the end of this file,
+   * which collapses every transition here to ~0ms.
+   * ------------------------------------------------------------------- */
+
+  /* Panels that grow the layout rather than sliding over it: the log panel.
+     Width, not x-position -- sliding in over the list would look like the
+     columns were being shoved off the edge. */
+
+  .panel-enter {
+    transition:
+      opacity var(--duration-base) var(--ease-standard),
+      width var(--duration-base) var(--ease-standard),
+      min-width var(--duration-base) var(--ease-standard);
+  }
+
+  /* The open size comes from the panel, via custom properties, because it is
+     that panel's layout rather than a property of the transition. Set as
+     custom properties and not as an inline `width`, which would outrank the
+     closed rule below and pin the panel open. */
+  .panel-enter.is-open {
+    opacity: 1;
+    width: var(--panel-w, 40%);
+    min-width: var(--panel-min, 0);
+  }
+
+  @starting-style {
+    .panel-enter.is-open {
+      opacity: 0;
+      width: 0;
+      min-width: 0;
+    }
+  }
+
+  .panel-enter:not(.is-open) {
+    opacity: 0;
+    width: 0;
+    min-width: 0;
+  }
+
+  /* Things the column makes room for: the detail bar. `interpolate-size`
+     unlocks transitions to `height: auto`, so the bar can be sized by its
+     content instead of carrying a magic pixel number that breaks the moment
+     the content wraps. */
+  .bar-enter {
+    interpolate-size: allow-keywords;
+    opacity: 1;
+    height: auto;
+    transition:
+      opacity var(--duration-fast) var(--ease-standard),
+      height var(--duration-fast) var(--ease-standard);
+  }
+
+  @starting-style {
+    .bar-enter.is-open {
+      opacity: 0;
+      height: 0;
+    }
+  }
+
+  .bar-enter:not(.is-open) {
+    opacity: 0;
+    height: 0;
+  }
+
+  /* Small things appearing in place: toasts. */
+  .pop-enter {
+    opacity: 1;
+    transform: none;
+    transition:
+      opacity var(--duration-fast) var(--ease-standard),
+      transform var(--duration-fast) var(--ease-standard);
+  }
+
+  @starting-style {
+    .pop-enter.is-open {
+      opacity: 0;
+      transform: translateY(8px) scale(0.98);
+    }
+  }
+
+  .pop-enter:not(.is-open) {
+    opacity: 0;
+    transform: scale(0.98);
+  }
+
+  /* Changing numbers must not reflow as digits change width. */
+  .tnum {
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: "tnum" 1;
+  }
+
+  /* One focus treatment across the app. Visible, and never removed. */
+  :focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+    border-radius: var(--radius-control);
+  }
+
+  /* Radix and native controls that manage their own focus ring. */
+  [data-focus-visible-added]:focus {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+  }
+
+  ::selection {
+    background-color: color-mix(in oklab, var(--color-accent) 35%, transparent);
+    color: var(--color-ink-strong);
+  }
+
+  /* Scrollbars: part of the chrome, styled to match. */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-edge-strong) transparent;
+  }
+
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background-color: var(--color-edge-strong);
+    border: 2px solid transparent;
+    background-clip: content-box;
+    border-radius: 999px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background-color: color-mix(in oklab, var(--color-ink) 30%, transparent);
+  }
+}
+
+/* Below a usable main-column width, an open side panel takes the whole
+   column. The alternative -- measured at 56-112px of leftover table -- was a
+   strip of clipped icons preserving nothing an operator scans. Lives OUTSIDE
+   @layer base on purpose: the hidden column carries Tailwind's `flex`
+   utility, and a layered `display: none` loses to the utilities layer no
+   matter its specificity -- unlayered wins.
+   860 = sidebar (208) + panel minimum (380) + the least table that still
+   shows name, status and actions (~270). Above that, both fit; the 900px
+   layout-verify scenario proves the coexistence side. */
+@media (max-width: 860px) {
+  .deck-split:has(> aside.is-open) > .deck-main {
+    display: none;
+  }
+  .deck-split:has(> aside.is-open) > aside.panel-enter.is-open {
+    width: auto;
+    max-width: none;
+    flex: 1;
+  }
+}
+
+/*
+ * White marks on a light surface.
+ *
+ * The icon standard is a flat white mark on transparency, which assumes a
+ * dark ground. On the light theme's white cards those marks are invisible --
+ * measured: most rows had no visible icon at all. `useMonochromeIcon` decides
+ * per icon whether it is actually a light monochrome mark, so only those are
+ * inverted here; a coloured icon is left alone rather than turned into a
+ * photographic negative.
+ */
+:root[data-theme="light"] .mono-mark {
+  filter: invert(1);
+}
+
+/* Accessibility is part of quality, not a setting. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

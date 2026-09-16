@@ -1,0 +1,30 @@
+[meta]
+id = "deno"
+name = "Deno"
+language = "TypeScript"
+icon = "hexagon"
+priority = 150
+default_ports = [8000]
+
+[[detect]]
+any_of = [
+  { file_exists = "deno.json" },
+  { file_exists = "deno.jsonc" },
+  { file_exists = "deno.lock" },
+]
+
+[[vars]]
+name = "task"
+default = "dev"
+cases = [
+  { value = "start", when = { json_key_exists = { file = "deno.json", pointer = "tasks/start" } } },
+]
+
+[commands.run]
+exec = { program = "deno", args = ["task", "{task}"] }
+
+[commands.install]
+exec = { program = "deno", args = ["install"] }
+
+[commands.test]
+exec = { program = "deno", args = ["test"] }

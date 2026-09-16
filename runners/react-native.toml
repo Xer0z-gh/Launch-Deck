@@ -1,0 +1,42 @@
+[meta]
+id = "react-native"
+name = "React Native"
+language = "TypeScript"
+framework = "React Native"
+icon = "smartphone"
+priority = 300
+default_ports = [8081]
+
+[[detect]]
+file_exists = "package.json"
+
+[[detect]]
+json_key_exists = { file = "package.json", pointer = "dependencies/react-native" }
+
+[version]
+json = { file = "package.json", pointer = "version" }
+
+[[vars]]
+name = "pm"
+default = "npm"
+cases = [
+  { value = "pnpm", when = { file_exists = "pnpm-lock.yaml" } },
+  { value = "yarn", when = { file_exists = "yarn.lock" } },
+]
+
+[commands.run]
+exec = { program = "{pm}", args = ["run", "start"] }
+
+[commands.install]
+exec = { program = "{pm}", args = ["install"] }
+
+# Setup detection. Read-only, like every detection rule: the launcher must
+# never execute anything just to describe a project.
+#
+# Without this, a project with no node_modules reported as a CRASH several
+# seconds after the user pressed Run -- the failure was on disk the whole time
+# and 6 of 29 projects in a real registry were in exactly this state.
+[[setup]]
+when_file_exists = "package.json"
+requires_any = ["node_modules"]
+hint = "Dependencies are not installed"

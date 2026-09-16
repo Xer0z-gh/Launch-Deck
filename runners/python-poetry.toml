@@ -1,0 +1,37 @@
+[meta]
+id = "python-poetry"
+name = "Python (Poetry)"
+language = "Python"
+framework = "Poetry"
+icon = "file-code-2"
+priority = 200
+
+[[detect]]
+file_exists = "pyproject.toml"
+
+[[detect]]
+toml_key_exists = { file = "pyproject.toml", path = "tool.poetry" }
+
+[version]
+toml = { file = "pyproject.toml", path = "tool.poetry.version" }
+
+[[vars]]
+name = "entry"
+default = "main.py"
+cases = [
+  { value = "manage.py", when = { file_exists = "manage.py" } },
+  { value = "main.py",   when = { file_exists = "main.py" } },
+]
+first_match = "*.py"
+
+[commands.run]
+exec = { program = "poetry", args = ["run", "python", "{entry}"] }
+
+[commands.install]
+exec = { program = "poetry", args = ["install"] }
+
+[commands.build]
+exec = { program = "poetry", args = ["build"] }
+
+[commands.test]
+exec = { program = "poetry", args = ["run", "pytest"] }

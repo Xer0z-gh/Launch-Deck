@@ -1,0 +1,25 @@
+[meta]
+id = "go"
+name = "Go"
+language = "Go"
+icon = "squircle"
+priority = 100
+default_ports = [8080]
+
+[[detect]]
+file_exists = "go.mod"
+
+[commands.run]
+exec = { program = "go", args = ["run", "."] }
+
+[commands.build]
+exec = { program = "go", args = ["build", "./..."] }
+
+[commands.install]
+exec = { program = "go", args = ["mod", "download"] }
+
+[commands.test]
+exec = { program = "go", args = ["test", "./..."] }
+
+[commands.clean]
+exec = { program = "go", args = ["clean"] }

@@ -1,0 +1,30 @@
+[meta]
+id = "dotnet"
+name = ".NET"
+language = "C#"
+icon = "square-code"
+priority = 100
+default_ports = [5000, 5001]
+
+[[detect]]
+any_of = [
+  { glob_matches = "*.csproj" },
+  { glob_matches = "*.fsproj" },
+  { glob_matches = "*.vbproj" },
+  { glob_matches = "*.sln" },
+]
+
+[commands.run]
+exec = { program = "dotnet", args = ["run"] }
+
+[commands.build]
+exec = { program = "dotnet", args = ["build", "-c", "Release"] }
+
+[commands.install]
+exec = { program = "dotnet", args = ["restore"] }
+
+[commands.test]
+exec = { program = "dotnet", args = ["test"] }
+
+[commands.clean]
+exec = { program = "dotnet", args = ["clean"] }

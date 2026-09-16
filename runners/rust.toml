@@ -1,0 +1,27 @@
+[meta]
+id = "rust"
+name = "Rust"
+language = "Rust"
+icon = "cog"
+priority = 100
+
+[[detect]]
+file_exists = "Cargo.toml"
+
+[version]
+toml = { file = "Cargo.toml", path = "package.version" }
+
+[commands.run]
+exec = { program = "cargo", args = ["run"] }
+
+[commands.build]
+exec = { program = "cargo", args = ["build", "--release"] }
+
+[commands.install]
+exec = { program = "cargo", args = ["fetch"] }
+
+[commands.test]
+exec = { program = "cargo", args = ["test"] }
+
+[commands.clean]
+exec = { program = "cargo", args = ["clean"] }

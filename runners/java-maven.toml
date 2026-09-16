@@ -1,0 +1,34 @@
+[meta]
+id = "java-maven"
+name = "Java (Maven)"
+language = "Java"
+framework = "Maven"
+icon = "coffee"
+priority = 100
+default_ports = [8080]
+
+[[detect]]
+file_exists = "pom.xml"
+
+# Prefer the project's own wrapper so the build uses the pinned Maven version.
+[[vars]]
+name = "mvn"
+default = "mvn"
+cases = [
+  { value = "mvnw.cmd", when = { file_exists = "mvnw.cmd" } },
+]
+
+[commands.run]
+exec = { program = "{mvn}", args = ["spring-boot:run"] }
+
+[commands.build]
+exec = { program = "{mvn}", args = ["package"] }
+
+[commands.install]
+exec = { program = "{mvn}", args = ["dependency:resolve"] }
+
+[commands.test]
+exec = { program = "{mvn}", args = ["test"] }
+
+[commands.clean]
+exec = { program = "{mvn}", args = ["clean"] }

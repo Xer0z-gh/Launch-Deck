@@ -1,0 +1,25 @@
+[meta]
+id = "lua"
+name = "Lua"
+language = "Lua"
+icon = "moon"
+priority = 100
+
+[[detect]]
+any_of = [
+  { file_exists = "main.lua" },
+  { file_exists = "init.lua" },
+  { glob_matches = "*.rockspec" },
+]
+
+[[vars]]
+name = "entry"
+default = "main.lua"
+cases = [
+  { value = "main.lua", when = { file_exists = "main.lua" } },
+  { value = "init.lua", when = { file_exists = "init.lua" } },
+]
+first_match = "*.lua"
+
+[commands.run]
+exec = { program = "lua", args = ["{entry}"] }

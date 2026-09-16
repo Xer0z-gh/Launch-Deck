@@ -1,0 +1,26 @@
+[meta]
+id = "php"
+name = "PHP"
+language = "PHP"
+icon = "file-code"
+priority = 100
+default_ports = [8000]
+
+[[detect]]
+any_of = [
+  { file_exists = "composer.json" },
+  { file_exists = "artisan" },
+  { file_exists = "index.php" },
+]
+
+[version]
+json = { file = "composer.json", pointer = "version" }
+
+[commands.run]
+exec = { program = "php", args = ["-S", "localhost:8000"] }
+
+[commands.install]
+exec = { program = "composer", args = ["install"] }
+
+[commands.test]
+exec = { program = "composer", args = ["test"] }

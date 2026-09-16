@@ -1,0 +1,32 @@
+[package]
+name = "deck-runtime"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+authors.workspace = true
+license.workspace = true
+
+[dependencies]
+# HTTP pings for user-configured surface URLs. Blocking client on purpose:
+# probes run on the blocking pool, and an async HTTP stack is a lot of tree
+# for one GET every sixty seconds.
+ureq = { version = "2", features = ["json"] }
+chrono = "0.4.45"
+deck-domain = { version = "0.1.0", path = "../deck-domain" }
+parking_lot = "0.12.5"
+png = "0.18.1"
+serde = "1.0.229"
+# For the per-app fact readers in `facts`: each one calls one or two known
+# endpoints and picks a couple of keys out of the response.
+serde_json = "1.0"
+sysinfo = "0.36.1"
+thiserror = "2.0.19"
+tokio = { version = "1.53.1", features = ["rt-multi-thread", "process", "io-util", "sync", "time", "macros", "fs"] }
+toml = "1.1.4"
+tracing = "0.1.44"
+uuid = "1.24.0"
+windows = { version = "0.62.2", features = ["Win32_System_JobObjects", "Win32_System_Threading", "Win32_Foundation", "Win32_System_Console", "Win32_System_Diagnostics_ToolHelp", "Win32_Security", "Win32_UI_Shell", "Win32_UI_WindowsAndMessaging", "Win32_Graphics_Gdi", "Win32_Graphics_Dxgi", "Win32_Graphics_Dxgi_Common", "Win32_NetworkManagement_IpHelper", "Win32_Networking_WinSock", "Win32_Storage_FileSystem", "Win32_System_Performance", "Win32_System_LibraryLoader"] }
+
+[dev-dependencies]
+serde_json = "1.0"
+tokio = { version = "1.53.1", features = ["rt", "macros", "time"] }

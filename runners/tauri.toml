@@ -1,0 +1,49 @@
+[meta]
+id = "tauri"
+name = "Tauri"
+language = "Rust"
+framework = "Tauri"
+icon = "app-window"
+priority = 400
+
+[[detect]]
+file_exists = "package.json"
+
+[[detect]]
+any_of = [
+  { file_exists = "src-tauri/Cargo.toml" },
+  { file_exists = "src-tauri/tauri.conf.json" },
+  { json_key_exists = { file = "package.json", pointer = "devDependencies/@tauri-apps/cli" } },
+]
+
+[version]
+json = { file = "package.json", pointer = "version" }
+
+[[vars]]
+name = "pm"
+default = "npm"
+cases = [
+  { value = "pnpm", when = { file_exists = "pnpm-lock.yaml" } },
+  { value = "yarn", when = { file_exists = "yarn.lock" } },
+  { value = "bun",  when = { file_exists = "bun.lockb" } },
+]
+
+[commands.run]
+exec = { program = "{pm}", args = ["run", "tauri", "dev"] }
+
+[commands.install]
+exec = { program = "{pm}", args = ["install"] }
+
+[commands.build]
+exec = { program = "{pm}", args = ["run", "tauri", "build"] }
+
+# Setup detection. Read-only, like every detection rule: the launcher must
+# never execute anything just to describe a project.
+#
+# Without this, a project with no node_modules reported as a CRASH several
+# seconds after the user pressed Run -- the failure was on disk the whole time
+# and 6 of 29 projects in a real registry were in exactly this state.
+[[setup]]
+when_file_exists = "package.json"
+requires_any = ["node_modules"]
+hint = "Dependencies are not installed"

@@ -1,0 +1,18 @@
+[meta]
+id = "dart"
+name = "Dart"
+language = "Dart"
+icon = "target"
+priority = 100
+
+[[detect]]
+file_exists = "pubspec.yaml"
+
+[commands.run]
+exec = { program = "dart", args = ["run"] }
+
+[commands.install]
+exec = { program = "dart", args = ["pub", "get"] }
+
+[commands.test]
+exec = { program = "dart", args = ["test"] }

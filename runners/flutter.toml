@@ -1,0 +1,28 @@
+[meta]
+id = "flutter"
+name = "Flutter"
+language = "Dart"
+framework = "Flutter"
+icon = "smartphone"
+priority = 200
+
+[[detect]]
+file_exists = "pubspec.yaml"
+
+[[detect]]
+file_contains = { file = "pubspec.yaml", text = "flutter" }
+
+[commands.run]
+exec = { program = "flutter", args = ["run"] }
+
+[commands.build]
+exec = { program = "flutter", args = ["build", "windows"] }
+
+[commands.install]
+exec = { program = "flutter", args = ["pub", "get"] }
+
+[commands.test]
+exec = { program = "flutter", args = ["test"] }
+
+[commands.clean]
+exec = { program = "flutter", args = ["clean"] }

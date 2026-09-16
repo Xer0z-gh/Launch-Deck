@@ -1,0 +1,32 @@
+[meta]
+id = "cmake"
+name = "CMake"
+language = "C++"
+framework = "CMake"
+icon = "binary"
+priority = 120
+
+[[detect]]
+file_exists = "CMakeLists.txt"
+
+[[vars]]
+name = "buildDir"
+default = "build"
+cases = [
+  { value = "out/build", when = { dir_exists = "out/build" } },
+]
+
+[commands.build]
+exec = { program = "cmake", args = ["--build", "{buildDir}", "--config", "Release"] }
+
+[commands.install]
+exec = { program = "cmake", args = ["-B", "{buildDir}", "-S", "."] }
+
+[commands.test]
+exec = { program = "ctest", args = ["--test-dir", "{buildDir}"] }
+
+# CMake does not define how to launch the result, so `run` builds and then
+# invokes the produced target through CTest's driver-free path. Users with a
+# specific binary override this in project settings.
+[commands.run]
+exec = { program = "cmake", args = ["--build", "{buildDir}", "--target", "run"] }

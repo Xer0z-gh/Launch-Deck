@@ -1,0 +1,26 @@
+[meta]
+id = "rails"
+name = "Ruby on Rails"
+language = "Ruby"
+framework = "Rails"
+icon = "gem"
+priority = 200
+default_ports = [3000]
+
+[[detect]]
+file_exists = "Gemfile"
+
+[[detect]]
+any_of = [
+  { file_exists = "bin/rails" },
+  { file_contains = { file = "Gemfile", text = "rails" } },
+]
+
+[commands.run]
+exec = { program = "bundle", args = ["exec", "rails", "server"] }
+
+[commands.install]
+exec = { program = "bundle", args = ["install"] }
+
+[commands.test]
+exec = { program = "bundle", args = ["exec", "rails", "test"] }

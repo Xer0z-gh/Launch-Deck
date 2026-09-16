@@ -1,0 +1,23 @@
+[meta]
+id = "laravel"
+name = "Laravel"
+language = "PHP"
+framework = "Laravel"
+icon = "file-code"
+priority = 200
+default_ports = [8000]
+
+[[detect]]
+file_exists = "artisan"
+
+[[detect]]
+file_exists = "composer.json"
+
+[commands.run]
+exec = { program = "php", args = ["artisan", "serve"] }
+
+[commands.install]
+exec = { program = "composer", args = ["install"] }
+
+[commands.test]
+exec = { program = "php", args = ["artisan", "test"] }

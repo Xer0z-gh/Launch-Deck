@@ -1,0 +1,40 @@
+# Only claims projects with explicit Bun config. A package.json project with a
+# bun lockfile is handled by the node runner, whose `pm` variable resolves to
+# bun -- same command, one fewer manifest.
+[meta]
+id = "bun"
+name = "Bun"
+language = "TypeScript"
+icon = "hexagon"
+priority = 150
+default_ports = [3000]
+
+[[detect]]
+file_exists = "bunfig.toml"
+
+[[vars]]
+name = "script"
+default = "dev"
+cases = [
+  { value = "start", when = { json_key_exists = { file = "package.json", pointer = "scripts/start" } } },
+]
+
+[commands.run]
+exec = { program = "bun", args = ["run", "{script}"] }
+
+[commands.install]
+exec = { program = "bun", args = ["install"] }
+
+[commands.test]
+exec = { program = "bun", args = ["test"] }
+
+# Setup detection. Read-only, like every detection rule: the launcher must
+# never execute anything just to describe a project.
+#
+# Without this, a project with no node_modules reported as a CRASH several
+# seconds after the user pressed Run -- the failure was on disk the whole time
+# and 6 of 29 projects in a real registry were in exactly this state.
+[[setup]]
+when_file_exists = "package.json"
+requires_any = ["node_modules"]
+hint = "Dependencies are not installed"

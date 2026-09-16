@@ -1,0 +1,54 @@
+[meta]
+id = "electron"
+name = "Electron"
+language = "JavaScript"
+framework = "Electron"
+icon = "atom"
+priority = 300
+
+[[detect]]
+file_exists = "package.json"
+
+[[detect]]
+any_of = [
+  { json_key_exists = { file = "package.json", pointer = "devDependencies/electron" } },
+  { json_key_exists = { file = "package.json", pointer = "dependencies/electron" } },
+]
+
+[version]
+json = { file = "package.json", pointer = "version" }
+
+[[vars]]
+name = "pm"
+default = "npm"
+cases = [
+  { value = "pnpm", when = { file_exists = "pnpm-lock.yaml" } },
+  { value = "yarn", when = { file_exists = "yarn.lock" } },
+]
+
+[[vars]]
+name = "script"
+default = "start"
+cases = [
+  { value = "dev", when = { json_key_exists = { file = "package.json", pointer = "scripts/dev" } } },
+]
+
+[commands.run]
+exec = { program = "{pm}", args = ["run", "{script}"] }
+
+[commands.install]
+exec = { program = "{pm}", args = ["install"] }
+
+[commands.build]
+exec = { program = "{pm}", args = ["run", "build"] }
+
+# Setup detection. Read-only, like every detection rule: the launcher must
+# never execute anything just to describe a project.
+#
+# Without this, a project with no node_modules reported as a CRASH several
+# seconds after the user pressed Run -- the failure was on disk the whole time
+# and 6 of 29 projects in a real registry were in exactly this state.
+[[setup]]
+when_file_exists = "package.json"
+requires_any = ["node_modules"]
+hint = "Dependencies are not installed"

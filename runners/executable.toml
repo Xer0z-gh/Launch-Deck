@@ -1,0 +1,19 @@
+# Lowest priority of all: a directory containing a built .exe alongside real
+# project files should be identified by those files, not by the artefact.
+[meta]
+id = "executable"
+name = "Executable"
+language = "Binary"
+icon = "app-window"
+priority = 10
+
+[[detect]]
+glob_matches = "*.exe"
+
+[[vars]]
+name = "entry"
+default = ""
+first_match = "*.exe"
+
+[commands.run]
+exec = { program = '{projectRoot}\{entry}', args = [] }

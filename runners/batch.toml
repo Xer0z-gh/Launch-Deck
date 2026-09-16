@@ -1,0 +1,25 @@
+[meta]
+id = "batch"
+name = "Batch file"
+language = "Batch"
+icon = "terminal"
+priority = 50
+
+[[detect]]
+any_of = [
+  { glob_matches = "*.bat" },
+  { glob_matches = "*.cmd" },
+]
+
+[[vars]]
+name = "entry"
+default = "run.bat"
+cases = [
+  { value = "main.bat",  when = { file_exists = "main.bat" } },
+  { value = "start.bat", when = { file_exists = "start.bat" } },
+  { value = "run.bat",   when = { file_exists = "run.bat" } },
+]
+first_match = "*.bat"
+
+[commands.run]
+exec = { program = "cmd.exe", args = ["/c", '{projectRoot}\{entry}'] }

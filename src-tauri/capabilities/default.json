@@ -1,0 +1,10 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "default",
+  "description": "Everything the main window is allowed to do. Folder/terminal/IDE opening is implemented Rust-side, so the webview needs only core IPC, events, and the native folder-pick dialog.",
+  "windows": ["main"],
+  "permissions": [
+    "core:default",
+    "dialog:allow-open"
+  ]
+}

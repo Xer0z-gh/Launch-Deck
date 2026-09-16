@@ -1,0 +1,27 @@
+# Scripts have no manifest to read, so `first_match` names the file to run.
+# Matches are sorted, so a folder with build.ps1 and deploy.ps1 resolves the
+# same way every launch; the user overrides it in project settings.
+[meta]
+id = "powershell"
+name = "PowerShell"
+language = "PowerShell"
+icon = "terminal"
+priority = 60
+
+[[detect]]
+glob_matches = "*.ps1"
+
+[[vars]]
+name = "entry"
+default = "main.ps1"
+cases = [
+  { value = "main.ps1",  when = { file_exists = "main.ps1" } },
+  { value = "start.ps1", when = { file_exists = "start.ps1" } },
+  { value = "run.ps1",   when = { file_exists = "run.ps1" } },
+]
+first_match = "*.ps1"
+
+[commands.run]
+exec = { program = "powershell.exe", args = [
+  "-NoProfile", "-ExecutionPolicy", "Bypass", "-File", '{projectRoot}\{entry}',
+] }

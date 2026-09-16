@@ -1,0 +1,36 @@
+[meta]
+id = "python-uv"
+name = "Python (uv)"
+language = "Python"
+framework = "uv"
+icon = "file-code-2"
+priority = 220
+
+[[detect]]
+file_exists = "pyproject.toml"
+
+[[detect]]
+any_of = [
+  { file_exists = "uv.lock" },
+  { toml_key_exists = { file = "pyproject.toml", path = "tool.uv" } },
+]
+
+[version]
+toml = { file = "pyproject.toml", path = "project.version" }
+
+[[vars]]
+name = "entry"
+default = "main.py"
+cases = [
+  { value = "main.py", when = { file_exists = "main.py" } },
+]
+first_match = "*.py"
+
+[commands.run]
+exec = { program = "uv", args = ["run", "{entry}"] }
+
+[commands.install]
+exec = { program = "uv", args = ["sync"] }
+
+[commands.test]
+exec = { program = "uv", args = ["run", "pytest"] }

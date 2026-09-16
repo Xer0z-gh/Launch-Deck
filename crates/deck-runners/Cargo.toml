@@ -1,0 +1,17 @@
+[package]
+name = "deck-runners"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+authors.workspace = true
+license.workspace = true
+
+[dependencies]
+chrono = { version = "0.4.45", default-features = false, features = ["clock", "std"] }
+deck-domain = { version = "0.1.0", path = "../deck-domain" }
+serde = { version = "1.0.229", features = ["derive"] }
+serde_json = "1.0.151"
+thiserror = "2.0.19"
+toml = "1.1.4"
+tracing = "0.1.44"
+walkdir = "2.5.0"

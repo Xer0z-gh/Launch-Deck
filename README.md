@@ -2,13 +2,13 @@
 
 A local-first control centre for every project on one machine: it runs them,
 watches them, and explains them when they break. Pointed at a real registry of
-56 projects, it named a specific, repairable reason **16 of them would not
+37 projects, it names a specific, repairable reason each one that will not
 start** — before anything was clicked, from filesystem reads alone, never by
 executing the project.
 
 ![Launch Deck: the dashboard, the searchable library, a project's manual pane and live log panel, the grid of marks, and the storage and diagnostics views](assets/demo.gif)
 
-*One control centre for 56 real projects — dashboard, searchable library,
+*One control centre for 37 real projects — dashboard, searchable library,
 per-project manual and log panel, grid of marks, storage and diagnostics.
 Captured 2026-09-15 from the 2026-09-14 release build; browse-only, nothing was
 launched during the recording.*
@@ -131,7 +131,7 @@ That is how the audit surfaced a project that had failed on `import whisper`
 Counted in this tree, not from memory: `cargo test --workspace` for the Rust
 totals, the suite list in `tools/verify/run-all.ps1` for the browser count,
 and the launcher audit of 2026-09-14 recorded in `docs/ROADMAP.md` (Phase 18)
-for the 56 projects and 475 run records. Every command is below; run them
+for the 37 projects and 375 run records. Every command is below; run them
 against any later commit rather than trusting these figures.
 
 353 Rust tests pass across the workspace, and 14 browser verification suites
@@ -158,7 +158,7 @@ is refused rather than assumed. The fifth,
 the folder name derived from a saved web app's title.
 
 This is not a demo registry. The figures come from the machine it was built
-on — 56 registered projects and 475 recorded runs — and the readiness work
+on — 37 registered projects and 375 recorded runs — and the readiness work
 above was designed from those records rather than by eye.
 
 Next (`docs/ROADMAP.md`, Phase R4 — the daily hook): the rest of the Today

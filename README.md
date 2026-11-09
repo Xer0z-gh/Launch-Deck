@@ -278,8 +278,6 @@ browser extensions and automation. This repo is a fair sample of how I work:
 the architecture, the rejected ideas and the verification record are all in
 `docs/`, written as the work happened rather than after it.
 
-tanner8206@gmail.com
-
 ## Licence
 
 MIT — full text in [LICENSE](LICENSE). The same declaration lives in
